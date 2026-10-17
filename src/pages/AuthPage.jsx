@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { ArrowRight, ShoppingBasket, Sprout } from 'lucide-react';
 import { API_BASE } from '../utils/api.js';
 import { useLanguage } from '../context/LanguageContext.jsx';
 import LanguageSelector from '../components/LanguageSelector.jsx';
@@ -22,6 +23,8 @@ const AuthPage = () => {
   const [form, setForm] = useState(defaultForm);
   const [status, setStatus] = useState({ loading: false, error: '', info: '' });
   const [location, setLocation] = useState(null);
+  const [showAccountForm, setShowAccountForm] = useState(false);
+  const [showDemoRoles, setShowDemoRoles] = useState(false);
 
   const title = mode === 'login' ? t('auth.title.login') : t('auth.title.register');
 
@@ -327,6 +330,56 @@ const AuthPage = () => {
   return (
     <div className="auth-page">
       <div className="auth-card">
+        {!showAccountForm && mode === 'login' ? (
+          <div className="auth-demo-screen">
+            <Link to="/" className="auth-brand">Kisanmitr</Link>
+            <div className="auth-lang">
+              <LanguageSelector />
+            </div>
+            <div className="auth-demo-mark" aria-hidden="true">
+              <Sprout size={30} />
+            </div>
+            <p className="auth-demo-eyebrow">{t('auth.demo.eyebrow')}</p>
+            <h1>{t('auth.demo.title')}</h1>
+            <p className="auth-demo-copy">{t('auth.demo.subtitle')}</p>
+
+            {!showDemoRoles ? (
+              <button
+                type="button"
+                className="btn btn-primary auth-demo-primary"
+                onClick={() => setShowDemoRoles(true)}
+              >
+                {t('auth.demo.cta')} <ArrowRight size={18} />
+              </button>
+            ) : (
+              <div className="auth-demo-roles">
+                <p>{t('auth.demo.chooseRole')}</p>
+                <button type="button" onClick={() => enterDemo('farmer')}>
+                  <Sprout size={20} />
+                  <span>{t('auth.demo.farmer')}</span>
+                  <ArrowRight size={17} />
+                </button>
+                <button type="button" onClick={() => enterDemo('buyer')}>
+                  <ShoppingBasket size={20} />
+                  <span>{t('auth.demo.buyer')}</span>
+                  <ArrowRight size={17} />
+                </button>
+              </div>
+            )}
+
+            <button
+              type="button"
+              className="auth-account-link"
+              onClick={() => {
+                setMode('login');
+                setShowAccountForm(true);
+              }}
+            >
+              {t('auth.demo.accountLink')}
+            </button>
+          </div>
+        ) : (
+          <>
         <div className="auth-header">
           <Link to="/" className="auth-brand">Kisanmitr</Link>
           <div className="auth-lang">
@@ -356,17 +409,6 @@ const AuthPage = () => {
             {t('auth.register')}
           </button>
         </div>
-
-        {mode === 'login' && (
-          <div className="auth-demo-actions">
-            <button type="button" className="btn btn-secondary" onClick={() => enterDemo('farmer')}>
-              Continue as Farmer (Demo)
-            </button>
-            <button type="button" className="btn btn-secondary" onClick={() => enterDemo('buyer')}>
-              Continue as Buyer (Demo)
-            </button>
-          </div>
-        )}
 
         <form className="auth-form" onSubmit={handleSubmit}>
           {mode === 'register' && (
@@ -511,6 +553,18 @@ const AuthPage = () => {
             </button>
           )}
         </form>
+            <button
+              type="button"
+              className="auth-account-link"
+              onClick={() => {
+                setMode('login');
+                setShowAccountForm(false);
+              }}
+            >
+              {t('auth.demo.backToDemo')}
+            </button>
+          </>
+        )}
       </div>
     </div>
   );
