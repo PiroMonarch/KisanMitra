@@ -4,7 +4,6 @@ import LoanAssistant from '../components/LoanAssistant/LoanAssistant.jsx';
 import OrderChat from '../components/OrderChat.jsx';
 import { API_BASE, getAuthHeaders } from '../utils/api.js';
 import { useLanguage } from '../context/LanguageContext.jsx';
-import { getDemoGroupRequests, setDemoGroupRequests } from '../utils/demoMarketplace.js';
 import {
   enqueueAction,
   getCachedFarmerListings,
@@ -32,14 +31,6 @@ const defaultForm = {
   shelfLifeDays: ''
 };
 
-const hasDemoSession = () => {
-  try {
-    return JSON.parse(localStorage.getItem('kisanmitr_user'))?.demo === true;
-  } catch (error) {
-    return false;
-  }
-};
-
 const FarmerDashboard = () => {
   const [activeTab, setActiveTab] = useState('sell');
   const [showAssistant, setShowAssistant] = useState(false);
@@ -57,7 +48,7 @@ const FarmerDashboard = () => {
   const [editingId, setEditingId] = useState(null);
   const [editForm, setEditForm] = useState(defaultForm);
   const [showEditModal, setShowEditModal] = useState(false);
-  const [isOffline, setIsOffline] = useState(() => !isOnline() || hasDemoSession());
+  const [isOffline, setIsOffline] = useState(() => !isOnline());
   const [activeChatOrder, setActiveChatOrder] = useState(null);
   const [groupRequests, setGroupRequests] = useState([]);
   const [groupSelections, setGroupSelections] = useState({});
@@ -105,7 +96,7 @@ const FarmerDashboard = () => {
     if (cached.length) {
       setListings(cached);
     }
-    if (!isOnline() || user.demo) {
+    if (!isOnline()) {
       return;
     }
     const response = await fetch(`${API_BASE}/api/products/farmer`, {
@@ -127,7 +118,7 @@ const FarmerDashboard = () => {
     if (cached.length) {
       setOrders(cached);
     }
-    if (!isOnline() || user.demo) {
+    if (!isOnline()) {
       return;
     }
     const response = await fetch(`${API_BASE}/api/orders/farmer`, {
@@ -169,10 +160,6 @@ const FarmerDashboard = () => {
   };
 
   const fetchGroupRequests = async () => {
-    if (user.demo) {
-      setGroupRequests(getDemoGroupRequests());
-      return;
-    }
     try {
       const response = await fetch(`${API_BASE}/api/group-fulfillment/requests`, {
         headers: { ...getAuthHeaders() }
@@ -202,12 +189,6 @@ const FarmerDashboard = () => {
   };
 
   useEffect(() => {
-    if (user.demo) {
-      setListings(getCachedFarmerListings(user.id));
-      setOrders(getCachedFarmerOrders(user.id));
-      setGroupRequests(getDemoGroupRequests());
-      return undefined;
-    }
     fetchListings();
     fetchOrders();
     fetchSubscriptionRequests();
@@ -251,7 +232,6 @@ const FarmerDashboard = () => {
 
   useEffect(() => {
   const handleOnline = async () => {
-      if (hasDemoSession()) return;
       setIsOffline(false);
       await syncMarketplaceQueue();
       fetchListings();
@@ -263,7 +243,7 @@ const FarmerDashboard = () => {
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
 
-    if (isOnline() && !hasDemoSession()) {
+    if (isOnline()) {
       syncMarketplaceQueue();
     }
 
@@ -291,10 +271,6 @@ const FarmerDashboard = () => {
   };
 
   const fetchNews = async () => {
-    if (user.demo) {
-      setNewsStatus({ loading: false, error: '', stale: false, cachedAt: null });
-      return;
-    }
     setNewsStatus((prev) => ({ ...prev, loading: true, error: '' }));
     try {
       const response = await fetch(`${API_BASE}/api/news/agriculture?language=${newsLanguage}&limit=6`, {
@@ -336,34 +312,6 @@ const FarmerDashboard = () => {
   const contributeToGroup = async (requestId) => {
     const selection = groupSelections[requestId];
     if (!selection?.productId || !selection?.qty) return;
-    if (user.demo) {
-      const product = listings.find((item) => item._id === selection.productId);
-      const quantity = Number(selection.qty);
-      if (!product || quantity <= 0 || quantity > product.quantity) {
-        setGroupToast({ visible: true, message: 'Choose a quantity within the available stock.' });
-        return;
-      }
-      const updatedRequests = getDemoGroupRequests().map((request) => {
-        if (request._id !== requestId) return request;
-        const contributions = [...(request.contributions || [])];
-        const existing = contributions.find((item) => item.productId === product._id);
-        const contribution = {
-          farmerId: user.id,
-          productId: product._id,
-          qty: quantity,
-          unitPrice: request.unitPrice,
-          value: quantity * request.unitPrice
-        };
-        if (existing) Object.assign(existing, contribution);
-        else contributions.push(contribution);
-        const total = contributions.reduce((sum, item) => sum + item.qty, 0);
-        return { ...request, contributions, status: total >= request.requestedQty ? 'Ready' : 'Open' };
-      });
-      setDemoGroupRequests(updatedRequests);
-      setGroupRequests(updatedRequests);
-      setGroupToast({ visible: true, message: t('group.toast.contributed') });
-      return;
-    }
     try {
       const response = await fetch(`${API_BASE}/api/group-fulfillment/contribute`, {
         method: 'POST',
@@ -387,26 +335,6 @@ const FarmerDashboard = () => {
   };
 
   const finalizeGroup = async (requestId) => {
-    if (user.demo) {
-      const updatedRequests = getDemoGroupRequests().map((request) =>
-        request._id === requestId && request.status === 'Ready'
-          ? { ...request, status: 'Accepted' }
-          : request
-      );
-      setDemoGroupRequests(updatedRequests);
-      setGroupRequests(updatedRequests);
-      setOrders((currentOrders) => {
-        const updatedOrders = currentOrders.map((order) =>
-          order._id === 'demo-order-group-wheat'
-            ? { ...order, status: 'Accepted', items: order.items.map((item) => ({ ...item, status: 'Accepted' })) }
-            : order
-        );
-        setCachedFarmerOrders(user.id, updatedOrders);
-        return updatedOrders;
-      });
-      setGroupToast({ visible: true, message: 'Demo group order accepted.' });
-      return;
-    }
     const response = await fetch(`${API_BASE}/api/group-fulfillment/finalize`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
@@ -479,7 +407,7 @@ const FarmerDashboard = () => {
         shelfLifeDays: Number(form.shelfLifeDays)
       };
 
-      if (!isOnline() || user.demo) {
+      if (!isOnline()) {
         const offlineId = makeOfflineId('listing');
         const offlineListing = {
           _id: offlineId,
@@ -503,7 +431,7 @@ const FarmerDashboard = () => {
         setListings((prev) => [offlineListing, ...prev]);
         setCachedFarmerListings(user.id, [offlineListing, ...getCachedFarmerListings(user.id)]);
         setCachedListings([offlineListing, ...getCachedListings()]);
-        if (!user.demo) enqueueAction('CREATE_PRODUCT', {
+        enqueueAction('CREATE_PRODUCT', {
           offlineId,
           farmerId: user.id,
           listing: {
@@ -645,7 +573,7 @@ const FarmerDashboard = () => {
   };
 
   const updateOrderStatus = async (orderId, action) => {
-    if (!isOnline() || user.demo) {
+    if (!isOnline()) {
       const updated = orders.map((order) => {
         if (order._id !== orderId) return order;
         const nextItems = (order.items || []).map((item) => {
@@ -667,7 +595,7 @@ const FarmerDashboard = () => {
       setOrders(updated);
       setCachedFarmerOrders(user.id, updated);
       const target = orders.find((order) => order._id === orderId);
-      if (target && !user.demo && !String(orderId).startsWith('offline-')) {
+      if (target && !String(orderId).startsWith('offline-')) {
         enqueueAction('UPDATE_ORDER_STATUS', { orderId, action, farmerId: user.id });
       }
       return;
@@ -718,7 +646,7 @@ const FarmerDashboard = () => {
     const id = listing._id;
     const isPending = listing.syncStatus === 'pending';
 
-    if (!isOnline() || user.demo) {
+    if (!isOnline()) {
       const next = listings.filter((item) => item._id !== id);
       setListings(next);
       setCachedFarmerListings(user.id, next);
@@ -726,7 +654,7 @@ const FarmerDashboard = () => {
 
       if (isPending) {
         removeQueuedAction((item) => item.type === 'CREATE_PRODUCT' && item.payload.offlineId === id);
-      } else if (!user.demo) {
+      } else {
         enqueueAction('DELETE_PRODUCT', { productId: id, farmerId: user.id });
       }
       return;
@@ -780,7 +708,7 @@ const FarmerDashboard = () => {
     };
 
     try {
-      if (!isOnline() || user.demo) {
+      if (!isOnline()) {
         const next = listings.map((item) =>
           item._id === editingId ? { ...item, ...payload } : item
         );
@@ -795,7 +723,7 @@ const FarmerDashboard = () => {
           (item) => ({ ...item, payload: { ...item.payload, listing: payload } })
         );
 
-        if (!updatedQueue && !user.demo) {
+        if (!updatedQueue) {
           enqueueAction('UPDATE_PRODUCT', { productId: editingId, farmerId: user.id, updates: payload });
         }
 

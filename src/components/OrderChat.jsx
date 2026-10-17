@@ -16,8 +16,7 @@ const OrderChat = ({ orderId, onClose }) => {
     }
   }, []);
 
-  const isDemo = currentUser.demo === true;
-  const socket = useMemo(() => (isDemo ? null : getSocket()), [isDemo]);
+  const socket = useMemo(() => getSocket(), []);
 
   const fetchChat = async () => {
     const response = await fetch(`${API_BASE}/api/chats/order/${orderId}`, {
@@ -33,31 +32,6 @@ const OrderChat = ({ orderId, onClose }) => {
   };
 
   useEffect(() => {
-    if (isDemo) {
-      setRoom({ _id: `demo-room-${orderId}`, isGroup: false, isDisabled: false });
-      setMessages([
-        {
-          _id: `demo-message-${orderId}-1`,
-          senderId: 'demo-farmer',
-          senderRole: 'farmer',
-          senderName: 'Demo Farmer',
-          content: 'Thanks for your order. I can prepare this produce for pickup or delivery.',
-          createdAt: new Date().toISOString(),
-          readBy: []
-        },
-        {
-          _id: `demo-message-${orderId}-2`,
-          senderId: 'demo-buyer',
-          senderRole: 'buyer',
-          senderName: 'Demo Buyer',
-          content: 'Great, please confirm when it is ready.',
-          createdAt: new Date().toISOString(),
-          readBy: []
-        }
-      ]);
-      return undefined;
-    }
-
     fetchChat();
     socket.emit('join_order', { orderId });
 
@@ -73,10 +47,9 @@ const OrderChat = ({ orderId, onClose }) => {
     return () => {
       socket.off('new_message');
     };
-  }, [orderId, room?._id, isDemo]);
+  }, [orderId, room?._id]);
 
   useEffect(() => {
-    if (!socket) return;
     messages.forEach((msg) => {
       if (msg.senderId !== currentUser.id && !msg.readBy?.includes(currentUser.id)) {
         socket.emit('mark_read', { orderId, messageId: msg._id });
@@ -90,25 +63,11 @@ const OrderChat = ({ orderId, onClose }) => {
 
   const sendMessage = () => {
     if (!input.trim() || room?.isDisabled) return;
-    if (isDemo) {
-      setMessages((previous) => [...previous, {
-        _id: `demo-message-${Date.now()}`,
-        senderId: currentUser.id,
-        senderRole: currentUser.role,
-        senderName: currentUser.name,
-        content: input.trim(),
-        createdAt: new Date().toISOString(),
-        readBy: [currentUser.id]
-      }]);
-      setInput('');
-      return;
-    }
     socket.emit('send_message', { orderId, content: input.trim() });
     setInput('');
   };
 
   const reportMessage = async (messageId) => {
-    if (isDemo) return;
     await fetch(`${API_BASE}/api/chats/report`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
