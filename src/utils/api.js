@@ -1,4 +1,8 @@
 export const resolveApiBase = () => {
+  if (import.meta.env.PROD && typeof window !== 'undefined') {
+    return window.location.origin;
+  }
+
   const envBase = import.meta.env.VITE_API_URL;
   if (envBase) return envBase.replace(/\/$/, '');
 

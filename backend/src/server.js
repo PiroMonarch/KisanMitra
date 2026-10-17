@@ -9,19 +9,17 @@ const jwt = require("jsonwebtoken");
 const ChatMessage = require("./models/ChatMessage");
 const User = require("./models/User");
 const { ensureRoomForOrder, isParticipant } = require("./services/chatService");
-const { runDueSubscriptions } = require("./services/subscriptionService");
-
-connectDB(); 
 
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: { origin: "*", methods: ["GET", "POST"] }
 });
 
-io.use((socket, next) => {
+io.use(async (socket, next) => {
   const token = socket.handshake.auth?.token;
   if (!token) return next(new Error("Unauthorized"));
   try {
+    await connectDB();
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     User.findById(decoded.id)
       .then((user) => {
@@ -81,10 +79,10 @@ io.on("connection", (socket) => {
 
 const PORT = process.env.PORT || 5001;
 
-server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+if (require.main === module) {
+  server.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
 
-setInterval(() => {
-  runDueSubscriptions().catch(() => {});
-}, 60 * 60 * 1000);
+module.exports = server;

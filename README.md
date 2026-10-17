@@ -25,16 +25,16 @@ Kisanmitr is a digital bridge between farmers and consumers. It helps farmers se
 
 ## Deployment
 
-The Vite frontend can be deployed on Vercel from this GitHub repository. The Express and Socket.IO backend must run as a separate Node.js web service because it uses persistent Socket.IO connections. Render is one option for hosting the backend.
+The Vite frontend and Express/Socket.IO backend are configured as two Vercel Services in one project, sharing a domain. The app serves the frontend at `/`, routes `/api/*` to the backend, and sends `/socket.io/*` to the backend for realtime chat.
 
 ### Frontend on Vercel
 
 1. Import `PiroMonarch/KisanMitra` from GitHub in Vercel.
 2. Keep the project root as the Root Directory.
 3. Use `npm run build` as the build command and `dist` as the output directory. These are also set in `vercel.json`.
-4. Add the environment variable `VITE_API_URL` with the public URL of the deployed backend, without a trailing slash.
-5. Deploy. The Vercel rewrite serves the React app for client-side routes such as `/auth`, `/farmer`, and `/buyer`.
+4. Set `MONGO_URI`, `JWT_SECRET`, and `CRON_SECRET` in Vercel project environment variables. Vercel Cron uses `CRON_SECRET` to authorize the scheduled subscription job.
+5. Deploy. The Vercel rewrite serves the React app for client-side routes such as `/auth`, `/farmer`, and `/buyer`. Production frontend requests use the same deployment origin, so no `VITE_API_URL` is needed.
 
 ### Backend and database
 
-Deploy the `backend` directory as a Node.js web service with `npm install` as the build command and `npm start` as the start command. Configure `MONGO_URI` and `JWT_SECRET` in the host's environment-variable settings. Set the backend's allowed CORS origins to the deployed Vercel site if you restrict CORS; never commit `.env` files or secret values.
+For local development, run the `backend` directory with `npm install` and `npm start`. Never commit `.env` files or secret values. Socket.IO connections can land on different Vercel function instances; if realtime chat must work across multiple instances, configure a shared Socket.IO adapter such as Redis.

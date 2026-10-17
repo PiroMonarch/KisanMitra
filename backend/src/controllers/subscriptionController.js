@@ -112,3 +112,17 @@ exports.runSubscriptionsNow = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+exports.runScheduledSubscriptions = async (req, res) => {
+  const cronSecret = process.env.CRON_SECRET;
+  if (!cronSecret || req.get("authorization") !== `Bearer ${cronSecret}`) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  try {
+    const result = await runDueSubscriptions(new Date());
+    res.json({ result });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
