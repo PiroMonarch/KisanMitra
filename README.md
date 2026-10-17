@@ -1,42 +1,90 @@
-# Kisanmitr - Smart Farming for India's Future
+# KisanMitr
 
-Kisanmitr is a digital bridge between farmers and consumers. It helps farmers sell produce directly to households, restaurants, hostels, and other buyers, giving consumers a more direct way to source from farmers and helping reduce reliance on middlemen. The platform also supports farmers with nearby input shopping, inventory management, and agricultural scheme guidance.
+**Live demo:** [kisan-mitra-k5bb.vercel.app](https://kisan-mitra-k5bb.vercel.app/)
 
-**Live Demo:** [kisan-mitra-k5bb.vercel.app](https://kisan-mitra-k5bb.vercel.app/)
+**GitHub:** [PiroMonarch/KisanMitra](https://github.com/PiroMonarch/KisanMitra)
 
-## Features
+KisanMitr is a marketplace prototype designed to connect farmers more directly with households, restaurants, hostels, and other buyers. Farmers can list produce, while buyers can browse listings and place orders. The goal is to make direct trade easier and help farmers reduce reliance on intermediaries.
 
-- **Buy Nearby**: Find the cheapest seeds, pesticides, and tools from nearby sellers.
-- **Farmer-to-Consumer Marketplace**: Help farmers connect and sell directly to households, restaurants, hostels, and other buyers, reducing middlemen in the supply chain.
-- **Farm Inventory**: Track stock levels and get expiry alerts to prevent losses.
-- **Loan Assistant**: Text-based help finding and applying for agricultural loans.
-- **Offline Mode**: Keeps selected marketplace actions available during connectivity interruptions.
+## The Problem
+
+Farmers may have difficulty finding buyers beyond their usual selling channels. Consumers and local businesses may also have difficulty discovering available produce directly from nearby farmers. When produce passes through several steps in the supply chain, the farmer's selling price and the consumer's final price can differ substantially.
+
+KisanMitr focuses on improving discovery and communication between the two sides. It does not guarantee a particular price or income increase; those outcomes need to be measured with farmers and buyers in real use.
+
+## What Works in the Prototype
+
+- **Farmer listings:** Farmers can create and manage produce listings with price, unit, quantity, description, and optional image.
+- **Buyer marketplace:** Buyers can browse listings, add products to a cart, and place orders.
+- **Order-based text chat:** A buyer and farmer can communicate in chat associated with an order. This is not a general chat directory.
+- **Order management:** Buyers and farmers can view orders and use the available order workflow.
+- **Farmer tools:** The dashboard includes weather information and agriculture news when the backend and relevant services are available.
+- **Text-based loan and scheme help:** The app includes a guided scheme and loan assistant.
+- **Limited offline queue:** Some marketplace actions can be saved in browser local storage and retried when connectivity returns. It is not a fully offline app; queued changes stay on that device until they sync, and sync requires a working backend and valid account.
+
+## Current Limitations
+
+- Price-history charts, live mandi-rate trends, and demand analytics are not implemented.
+- Seller verification badges are not currently displayed in the buyer marketplace. Reviews exist in the backend flow, but should not be presented as a complete verification system.
+- Offline support covers selected cached data and queued marketplace actions only. Fresh data, chat, and other server-backed features require connectivity.
+- Demo role entry is for exploring dashboards; it does not create a real authenticated backend account. Use registered accounts to test server-backed marketplace workflows.
+- The Vercel backend uses serverless instances. Realtime chat across multiple instances may need a shared Socket.IO adapter such as Redis.
 
 ## Tech Stack
 
-- React
-- Vite
-- Vanilla CSS (Premium Nature-Tech Design)
-- Lucide React (Icons)
+- **Frontend:** React, Vite, React Router, and CSS
+- **Backend:** Node.js, Express, Socket.IO, and Mongoose
+- **Database:** MongoDB
+- **Hosting:** Vercel multi-service deployment for the frontend and backend
 
-## Getting Started
+## Run Locally
 
-1.  Clone the repository.
-2.  Run `npm install` to install dependencies.
-3.  Run `npm run dev` to start the development server.
+Install dependencies from the repository root:
 
-## Deployment
+```powershell
+npm install
+npm --prefix backend install
+```
 
-The Vite frontend and Express/Socket.IO backend are configured as two Vercel Services in one project, sharing a domain. The app serves the frontend at `/`, routes `/api/*` to the backend, and sends `/socket.io/*` to the backend for realtime chat.
+Create `backend/.env` with the required local settings:
 
-### Frontend on Vercel
+```env
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_private_random_secret
+```
 
-1. Import `PiroMonarch/KisanMitra` from GitHub in Vercel.
-2. Keep the project root as the Root Directory.
-3. Use `npm run build` as the build command and `dist` as the output directory. These are also set in `vercel.json`.
-4. Set `MONGO_URI`, `JWT_SECRET`, and `CRON_SECRET` in Vercel project environment variables. Vercel Cron uses `CRON_SECRET` to authorize the scheduled subscription job.
-5. Deploy. The Vercel rewrite serves the React app for client-side routes such as `/auth`, `/farmer`, and `/buyer`. Production frontend requests use the same deployment origin, so no `VITE_API_URL` is needed.
+Keep `.env` files and secret values private. Start the frontend and backend in separate terminals:
 
-### Backend and database
+```powershell
+npm run dev
+```
 
-For local development, run the `backend` directory with `npm install` and `npm start`. Never commit `.env` files or secret values. Socket.IO connections can land on different Vercel function instances; if realtime chat must work across multiple instances, configure a shared Socket.IO adapter such as Redis.
+```powershell
+npm --prefix backend run dev
+```
+
+The frontend normally opens at `http://localhost:5173`; the local API defaults to port `5001`.
+
+## Hackathon Demo
+
+1. Enter the Farmer demo dashboard and show how a farmer creates a produce listing.
+2. Enter the Buyer demo dashboard and show how a buyer browses the marketplace.
+3. Explain the order and order-based chat flow.
+4. Describe the intended impact as reducing friction between farmers and buyers, not as eliminating every intermediary or guaranteeing higher income.
+
+For testing real orders and chat, use registered farmer and buyer accounts with the backend and MongoDB configured.
+
+## Deploy on Vercel
+
+The root [`vercel.json`](vercel.json) defines two services in one Vercel project:
+
+- `app` serves the Vite frontend at `/`.
+- `backend` serves Express API requests under `/api/*` and Socket.IO under `/socket.io/*`.
+
+Import this GitHub repository into Vercel and set these project environment variables:
+
+- `MONGO_URI`: MongoDB connection string
+- `JWT_SECRET`: long, private signing secret
+- `CRON_SECRET`: long, private secret used to authorize the scheduled subscription job
+
+Production frontend API calls use the same deployment origin, so `VITE_API_URL` is not required. Never commit real secrets or `.env` files.
