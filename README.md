@@ -1,11 +1,11 @@
 # Kisanmitr - Smart Farming for India's Future
 
-Kisanmitr is a comprehensive platform designed to empower Indian farmers by solving their daily challenges related to buying inputs, selling produce, and managing inventory.
+Kisanmitr is a digital bridge between farmers and consumers. It helps farmers sell produce directly to households, restaurants, hostels, and other buyers, giving consumers a more direct way to source from farmers and helping reduce reliance on middlemen. The platform also supports farmers with nearby input shopping, inventory management, and agricultural scheme guidance.
 
 ## Features
 
 - **Buy Nearby**: Find the cheapest seeds, pesticides, and tools from nearby sellers.
-- **Sell Direct**: Connect directly with bulk buyers like hostels and restaurants.
+- **Farmer-to-Consumer Marketplace**: Help farmers connect and sell directly to households, restaurants, hostels, and other buyers, reducing middlemen in the supply chain.
 - **Farm Inventory**: Track stock levels and get expiry alerts to prevent losses.
 - **Loan Assistant**: Text-based help finding and applying for agricultural loans.
 - **Offline Mode**: Keeps selected marketplace actions available during connectivity interruptions.
