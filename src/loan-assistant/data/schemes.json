@@ -1,0 +1,378 @@
+{
+    "version": "1.0.0",
+    "last_updated": "2026-02-01",
+    "schemes": [
+        {
+            "scheme_id": "KCC",
+            "name": "Kisan Credit Card",
+            "name_hi": "किसान क्रेडिट कार्ड",
+            "type": "AGRI_LOAN",
+            "states": [
+                "ALL"
+            ],
+            "min_land": 0,
+            "max_land": 999,
+            "farmer_types": [
+                "owner",
+                "tenant"
+            ],
+            "purposes": [
+                "seeds",
+                "fertilizer",
+                "tools"
+            ],
+            "repayment": [
+                "post-harvest",
+                "monthly"
+            ],
+            "interest_rate": "4%",
+            "max_amount": 300000,
+            "documents": [
+                "Aadhaar",
+                "Land Record",
+                "Bank Passbook"
+            ],
+            "description": "Short-term credit for crop production",
+            "description_hi": "फसल उत्पादन के लिए अल्पकालिक ऋण"
+        },
+        {
+            "scheme_id": "PMFBY",
+            "name": "PM Fasal Bima Yojana",
+            "name_hi": "प्रधानमंत्री फसल बीमा योजना",
+            "type": "GOV_SCHEME",
+            "states": [
+                "ALL"
+            ],
+            "min_land": 0,
+            "max_land": 999,
+            "farmer_types": [
+                "owner",
+                "tenant"
+            ],
+            "purposes": [
+                "seeds",
+                "fertilizer",
+                "tools",
+                "irrigation"
+            ],
+            "repayment": [],
+            "interest_rate": null,
+            "max_amount": null,
+            "documents": [
+                "Aadhaar",
+                "Land Record",
+                "Bank Account",
+                "Sowing Certificate"
+            ],
+            "description": "Crop insurance against natural calamities",
+            "description_hi": "प्राकृतिक आपदाओं से फसल बीमा"
+        },
+        {
+            "scheme_id": "PMKSY",
+            "name": "PM Krishi Sinchai Yojana",
+            "name_hi": "प्रधानमंत्री कृषि सिंचाई योजना",
+            "type": "GOV_SCHEME",
+            "states": [
+                "ALL"
+            ],
+            "min_land": 0.01,
+            "max_land": 999,
+            "farmer_types": [
+                "owner"
+            ],
+            "purposes": [
+                "irrigation"
+            ],
+            "repayment": [],
+            "interest_rate": null,
+            "max_amount": null,
+            "documents": [
+                "Aadhaar",
+                "Land Record",
+                "Bank Account"
+            ],
+            "description": "Subsidy for micro-irrigation systems",
+            "description_hi": "सूक्ष्म सिंचाई प्रणालियों के लिए सब्सिडी"
+        },
+        {
+            "scheme_id": "SMAM",
+            "name": "Sub-Mission on Agricultural Mechanization",
+            "name_hi": "कृषि यंत्रीकरण उप-मिशन",
+            "type": "GOV_SCHEME",
+            "states": [
+                "ALL"
+            ],
+            "min_land": 0.01,
+            "max_land": 999,
+            "farmer_types": [
+                "owner",
+                "tenant"
+            ],
+            "purposes": [
+                "tools"
+            ],
+            "repayment": [],
+            "interest_rate": null,
+            "max_amount": 500000,
+            "documents": [
+                "Aadhaar",
+                "Land Record",
+                "Quotation from Dealer"
+            ],
+            "description": "Subsidy for farm machinery purchase",
+            "description_hi": "कृषि मशीनरी खरीद पर सब्सिडी"
+        },
+        {
+            "scheme_id": "PKVY",
+            "name": "Paramparagat Krishi Vikas Yojana",
+            "name_hi": "परंपरागत कृषि विकास योजना",
+            "type": "GOV_SCHEME",
+            "states": [
+                "ALL"
+            ],
+            "min_land": 0.5,
+            "max_land": 10,
+            "farmer_types": [
+                "owner"
+            ],
+            "purposes": [
+                "seeds",
+                "fertilizer"
+            ],
+            "repayment": [],
+            "interest_rate": null,
+            "max_amount": 50000,
+            "documents": [
+                "Aadhaar",
+                "Land Record",
+                "Group Formation Certificate"
+            ],
+            "description": "Support for organic farming",
+            "description_hi": "जैविक खेती के लिए सहायता"
+        },
+        {
+            "scheme_id": "NABARD_TERM",
+            "name": "NABARD Term Loan",
+            "name_hi": "नाबार्ड टर्म लोन",
+            "type": "AGRI_LOAN",
+            "states": [
+                "ALL"
+            ],
+            "min_land": 2,
+            "max_land": 999,
+            "farmer_types": [
+                "owner"
+            ],
+            "purposes": [
+                "tools",
+                "irrigation"
+            ],
+            "repayment": [
+                "monthly"
+            ],
+            "interest_rate": "9%",
+            "max_amount": 1000000,
+            "documents": [
+                "Aadhaar",
+                "Land Record",
+                "Bank Statement",
+                "Project Report"
+            ],
+            "description": "Long-term loan for farm infrastructure",
+            "description_hi": "कृषि अवसंरचना के लिए दीर्घकालिक ऋण"
+        },
+        {
+            "scheme_id": "PACS_LOAN",
+            "name": "PACS Short Term Loan",
+            "name_hi": "पैक्स अल्पकालिक ऋण",
+            "type": "AGRI_LOAN",
+            "states": [
+                "UP",
+                "MP",
+                "RJ",
+                "HR",
+                "PB",
+                "BR",
+                "MH"
+            ],
+            "min_land": 0,
+            "max_land": 5,
+            "farmer_types": [
+                "owner",
+                "tenant"
+            ],
+            "purposes": [
+                "seeds",
+                "fertilizer"
+            ],
+            "repayment": [
+                "post-harvest"
+            ],
+            "interest_rate": "7%",
+            "max_amount": 100000,
+            "documents": [
+                "Aadhaar",
+                "PACS Membership",
+                "Land Record"
+            ],
+            "description": "Cooperative society crop loan",
+            "description_hi": "सहकारी समिति फसल ऋण"
+        },
+        {
+            "scheme_id": "SHC",
+            "name": "Soil Health Card Scheme",
+            "name_hi": "मृदा स्वास्थ्य कार्ड योजना",
+            "type": "GOV_SCHEME",
+            "states": [
+                "ALL"
+            ],
+            "min_land": 0,
+            "max_land": 999,
+            "farmer_types": [
+                "owner",
+                "tenant"
+            ],
+            "purposes": [
+                "fertilizer"
+            ],
+            "repayment": [],
+            "interest_rate": null,
+            "max_amount": null,
+            "documents": [
+                "Aadhaar",
+                "Land Record"
+            ],
+            "description": "Free soil testing and fertilizer recommendations",
+            "description_hi": "मुफ्त मिट्टी परीक्षण और उर्वरक सिफारिशें"
+        },
+        {
+            "scheme_id": "PMKISAN",
+            "name": "PM Kisan Samman Nidhi",
+            "name_hi": "प्रधानमंत्री किसान सम्मान निधि",
+            "type": "GOV_SCHEME",
+            "states": [
+                "ALL"
+            ],
+            "min_land": 0.01,
+            "max_land": 5,
+            "farmer_types": [
+                "owner"
+            ],
+            "purposes": [
+                "seeds",
+                "fertilizer",
+                "tools",
+                "irrigation"
+            ],
+            "repayment": [],
+            "interest_rate": null,
+            "max_amount": 6000,
+            "documents": [
+                "Aadhaar",
+                "Land Record",
+                "Bank Account"
+            ],
+            "description": "Direct income support of Rs 6000/year",
+            "description_hi": "₹6000/वर्ष की प्रत्यक्ष आय सहायता"
+        },
+        {
+            "scheme_id": "MIF",
+            "name": "Micro Irrigation Fund",
+            "name_hi": "सूक्ष्म सिंचाई कोष",
+            "type": "AGRI_LOAN",
+            "states": [
+                "GJ",
+                "MH",
+                "KA",
+                "AP",
+                "TS",
+                "TN",
+                "RJ"
+            ],
+            "min_land": 0.5,
+            "max_land": 999,
+            "farmer_types": [
+                "owner"
+            ],
+            "purposes": [
+                "irrigation"
+            ],
+            "repayment": [
+                "monthly",
+                "post-harvest"
+            ],
+            "interest_rate": "5%",
+            "max_amount": 500000,
+            "documents": [
+                "Aadhaar",
+                "Land Record",
+                "Water Source Certificate"
+            ],
+            "description": "Loan for drip and sprinkler irrigation",
+            "description_hi": "ड्रिप और स्प्रिंकलर सिंचाई के लिए ऋण"
+        },
+        {
+            "scheme_id": "AIF",
+            "name": "Agriculture Infrastructure Fund",
+            "name_hi": "कृषि अवसंरचना कोष",
+            "type": "AGRI_LOAN",
+            "states": [
+                "ALL"
+            ],
+            "min_land": 2,
+            "max_land": 999,
+            "farmer_types": [
+                "owner"
+            ],
+            "purposes": [
+                "tools",
+                "irrigation"
+            ],
+            "repayment": [
+                "monthly"
+            ],
+            "interest_rate": "7%",
+            "max_amount": 2000000,
+            "documents": [
+                "Aadhaar",
+                "Land Record",
+                "Project Report",
+                "Bank Statement"
+            ],
+            "description": "Loan for post-harvest infrastructure",
+            "description_hi": "फसल कटाई के बाद के बुनियादी ढांचे के लिए ऋण"
+        },
+        {
+            "scheme_id": "NMOOP",
+            "name": "National Mission on Oilseeds",
+            "name_hi": "तिलहन पर राष्ट्रीय मिशन",
+            "type": "GOV_SCHEME",
+            "states": [
+                "MP",
+                "RJ",
+                "GJ",
+                "MH",
+                "UP",
+                "KA"
+            ],
+            "min_land": 0.5,
+            "max_land": 999,
+            "farmer_types": [
+                "owner",
+                "tenant"
+            ],
+            "purposes": [
+                "seeds"
+            ],
+            "repayment": [],
+            "interest_rate": null,
+            "max_amount": 25000,
+            "documents": [
+                "Aadhaar",
+                "Land Record"
+            ],
+            "description": "Subsidy for oilseed cultivation",
+            "description_hi": "तिलहन खेती पर सब्सिडी"
+        }
+    ]
+}
