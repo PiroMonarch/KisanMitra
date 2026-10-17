@@ -2,6 +2,8 @@
 
 Kisanmitr is a digital bridge between farmers and consumers. It helps farmers sell produce directly to households, restaurants, hostels, and other buyers, giving consumers a more direct way to source from farmers and helping reduce reliance on middlemen. The platform also supports farmers with nearby input shopping, inventory management, and agricultural scheme guidance.
 
+**Live Demo:** [kisan-mitra-k5bb.vercel.app](https://kisan-mitra-k5bb.vercel.app/)
+
 ## Features
 
 - **Buy Nearby**: Find the cheapest seeds, pesticides, and tools from nearby sellers.
