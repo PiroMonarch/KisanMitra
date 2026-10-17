@@ -4,6 +4,7 @@ import { ArrowRight, ShoppingBasket, Sprout } from 'lucide-react';
 import { API_BASE } from '../utils/api.js';
 import { useLanguage } from '../context/LanguageContext.jsx';
 import LanguageSelector from '../components/LanguageSelector.jsx';
+import { seedDemoMarketplace } from '../utils/demoMarketplace.js';
 
 const defaultForm = {
   name: '',
@@ -40,6 +41,7 @@ const AuthPage = () => {
   };
 
   const enterDemo = (role) => {
+    seedDemoMarketplace();
     const demoUser = {
       id: `demo-${role}`,
       name: role === 'farmer' ? 'Demo Farmer' : 'Demo Buyer',

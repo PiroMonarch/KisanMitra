@@ -3,15 +3,18 @@ import BuyerNavbar from '../components/BuyerNavbar.jsx';
 import OrderChat from '../components/OrderChat.jsx';
 import { API_BASE, getAuthHeaders } from '../utils/api.js';
 import { useLanguage } from '../context/LanguageContext.jsx';
+import { seedDemoMarketplace } from '../utils/demoMarketplace.js';
 import {
   enqueueAction,
   getCachedBuyerOrders,
+  getCachedFarmerOrders,
   getCachedListings,
   isOnline,
   makeOfflineId,
   mergeListings,
   mergeOrders,
   setCachedBuyerOrders,
+  setCachedFarmerOrders,
   setCachedListings,
   syncMarketplaceQueue
 } from '../utils/offlineMarketplace.js';
@@ -25,6 +28,14 @@ const loadJson = (key, fallback) => {
     return raw ? JSON.parse(raw) : fallback;
   } catch (error) {
     return fallback;
+  }
+};
+
+const hasDemoSession = () => {
+  try {
+    return JSON.parse(localStorage.getItem('kisanmitr_user'))?.demo === true;
+  } catch (error) {
+    return false;
   }
 };
 
@@ -52,7 +63,7 @@ const BuyerDashboard = () => {
     pincode: ''
   });
   const [qtySelections, setQtySelections] = useState({});
-  const [isOffline, setIsOffline] = useState(() => !isOnline());
+  const [isOffline, setIsOffline] = useState(() => !isOnline() || hasDemoSession());
   const [activeChatOrder, setActiveChatOrder] = useState(null);
   const [checkout, setCheckout] = useState(() => {
     const saved = loadJson(addressStorageKey, null);
@@ -105,6 +116,12 @@ const BuyerDashboard = () => {
   }, [user]);
 
   useEffect(() => {
+    if (user.demo) {
+      seedDemoMarketplace();
+      setListings(getCachedListings());
+      setOrders(getCachedBuyerOrders(user.id));
+      return;
+    }
     const cachedListings = getCachedListings();
     if (cachedListings.length) setListings(cachedListings);
     const cachedOrders = getCachedBuyerOrders(user.id);
@@ -155,6 +172,7 @@ const BuyerDashboard = () => {
 
   useEffect(() => {
     const handleOnline = async () => {
+      if (hasDemoSession()) return;
       setIsOffline(false);
       await syncMarketplaceQueue();
       const refreshProducts = await fetch(`${API_BASE}/api/products`);
@@ -187,7 +205,7 @@ const BuyerDashboard = () => {
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
 
-    if (isOnline()) {
+    if (isOnline() && !hasDemoSession()) {
       syncMarketplaceQueue();
     }
 
@@ -434,13 +452,13 @@ const BuyerDashboard = () => {
       pincode: checkout.pincode
     }));
 
-    if (!isOnline()) {
+    if (!isOnline() || user.demo) {
       const offlineId = makeOfflineId('order');
       const total = cart.reduce((sum, item) => sum + Number(item.price) * item.qty, 0);
       const offlineOrder = {
         _id: offlineId,
         offlineId,
-        syncStatus: 'pending',
+        ...(user.demo ? {} : { syncStatus: 'pending' }),
         createdAt: new Date().toISOString(),
         status: 'Pending',
         total,
@@ -470,7 +488,10 @@ const BuyerDashboard = () => {
       const nextOrders = [offlineOrder, ...orders];
       setOrders(nextOrders);
       setCachedBuyerOrders(user.id, nextOrders);
-      enqueueAction('PLACE_ORDER', {
+      if (user.demo) {
+        const demoFarmerOrders = getCachedFarmerOrders('demo-farmer');
+        setCachedFarmerOrders('demo-farmer', [offlineOrder, ...demoFarmerOrders]);
+      } else enqueueAction('PLACE_ORDER', {
         offlineId,
         buyerId: user.id,
         items,
